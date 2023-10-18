@@ -1,0 +1,3 @@
+﻿  Main.cpp
+C:\Users\jebmi\source\repos\CSCN 111\HotelLab\HotelLab\Main.cpp(48,11): error C2079: 'inFile' uses undefined class 'std::basic_ifstream<char,std::char_traits<char>>'
+C:\Users\jebmi\source\repos\CSCN 111\HotelLab\HotelLab\Main.cpp(52,11): error C2079: 'outFile' uses undefined class 'std::basic_ofstream<char,std::char_traits<char>>'
