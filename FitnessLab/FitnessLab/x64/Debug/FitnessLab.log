@@ -1,0 +1,5 @@
+﻿  Main.cpp
+C:\Users\jebmi\source\repos\CSCN 111\FitnessLab\FitnessLab\Main.cpp(36,39): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\jebmi\source\repos\CSCN 111\FitnessLab\FitnessLab\Main.cpp(37,52): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\jebmi\source\repos\CSCN 111\FitnessLab\FitnessLab\Main.cpp(38,41): warning C4305: 'initializing': truncation from 'double' to 'float'
+  FitnessLab.vcxproj -> C:\Users\jebmi\source\repos\CSCN 111\FitnessLab\x64\Debug\FitnessLab.exe
