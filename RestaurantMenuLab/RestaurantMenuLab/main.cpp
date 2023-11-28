@@ -40,6 +40,7 @@
 
 //Include statements
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <iomanip>
 
@@ -47,6 +48,8 @@ using namespace std;
 
 //Global declarations: Constants and type definitions only -- no variables
 const string FILE_NAME = "menu.txt";
+const int MENU_LEN = 8;
+const float TAX_RATE = 0.05; // 5% tax
 struct MenuItemType
 {
 	string menuItem;
@@ -57,8 +60,20 @@ struct MenuItemType
 //Function prototypes
 void wait(); // given
 
-// Function 1 - 
-void getData();
+// Function 1 - loads the data into the array menuList from the text file
+void getData(MenuItemType menuArray[MENU_LEN]);
+
+// Function 2 - shows the different items offered by the restaurant and tells 
+//  the user how to select the items.
+void showMenu(MenuItemType menuArray[MENU_LEN]);
+
+// Function 3 - asks the user if they are finished and returns the parsed and 
+//  error checked result
+bool userIsFinished();
+
+// Function 4 - calculates and prints the check. (Note that the billing amount 
+//  should include a 5% tax.)
+void printCheck(MenuItemType menuArray[MENU_LEN]);
 
 int main()
 {
@@ -66,8 +81,18 @@ int main()
 	cout << "Jared Miller -- Lab 09" << endl << endl;
 
 	//Variable declarations
+	MenuItemType menuList[MENU_LEN];
 
 	//Program logic
+	cout << "-- Welcome to Jared's Restaurant --" << endl << endl;
+
+	getData(menuList);
+
+	do {
+		showMenu(menuList);
+	} while (!userIsFinished());
+
+	printCheck(menuList);
 
 	//Closing program statements
 	wait(); //Halts the program until the user is ready to finish
@@ -86,4 +111,141 @@ void wait()
 	}
 	cout << "Press the Enter key to continue ... ";
 	cin.get();
+}
+
+// Function 1 - loads the data into the array menuList from the text file
+void getData(MenuItemType menuArray[MENU_LEN])
+{
+	// locals
+	ifstream inFile;
+	inFile.open(FILE_NAME);
+
+	// extract data out of file and into correct location
+	for (int i = 0; i < MENU_LEN; i++)
+	{
+		getline(inFile, menuArray[i].menuItem); // stores string
+		inFile >> menuArray[i].menuPrice; // stores price
+		menuArray[i].isOrdered = false;
+		inFile.ignore(1);
+	}
+}
+
+// Function 2 - shows the different items offered by the restaurant and tells 
+//  the user how to select the items.
+void showMenu(MenuItemType menuArray[MENU_LEN])
+{
+	// locals
+	const int COLUMN_WIDTH = 20;
+	int itemNumber = 0;
+
+	// Format upcoming display
+	cout << fixed << setprecision(2) << left;
+
+	cout << "Menu:" << endl;
+
+	for (int i = 0; i < MENU_LEN; i++)
+	{
+		// don't display menu itens that have already been ordered
+		if (menuArray[i].isOrdered) 
+		{
+			string s;
+			// construct the string
+			for (int j = 0; j < COLUMN_WIDTH; j++)
+			{
+				if (j < menuArray[i].menuItem.length())
+				{
+					s += '-';
+				}
+				else
+				{
+					s += ' ';
+				}
+			}
+
+			cout << " -- " << setw(COLUMN_WIDTH) << s << "-----" << endl;
+			continue;
+		} 
+
+		cout << " " << i+1 << ". " << setw(COLUMN_WIDTH) << menuArray[i].menuItem;
+		cout << "$" << menuArray[i].menuPrice << endl;
+	}
+
+	cout << endl;
+
+	// Get user choice
+	cout << "Please enter the number of the item you would like to order: ";
+	cin >> itemNumber;
+	// Error check the input
+	while (cin.fail() || itemNumber > MENU_LEN || itemNumber < 1)
+	{
+		cout << "ERROR. Please enter a valid item number: ";
+		cin.clear();
+		cin.ignore(100000, '\n');
+		cin >> itemNumber;
+	}
+
+	menuArray[itemNumber - 1].isOrdered = true;
+}
+
+// Function 3 - asks the user if they are finished and returns the parsed and 
+//  error checked result
+bool userIsFinished()
+{
+	// locals
+	char resp = ' ';
+
+	// Ask to continue
+	cout << "Would you like to another item? (y/n) ";
+	cin >> resp;
+	// Error check the input
+	while (cin.fail() || (resp != 'y' && resp != 'n'))
+	{
+		cout << "ERROR. Please enter either 'y' or 'n': ";
+		cin.clear();
+		cin.ignore(100000, '\n');
+		cin >> resp;
+	}
+
+	cout << endl;
+
+	return (resp == 'n');
+}
+
+// Function 4 - calculates and prints the check. (Note that the billing amount 
+//  should include a 5% tax.)
+void printCheck(MenuItemType menuArray[MENU_LEN])
+{
+	// locals
+	const int COLUMN_WIDTH = 20;
+	double total = 0;
+	double tax = 0;
+
+	// Format upcoming display
+	cout << fixed << setprecision(2) << left;
+
+	// Print out the user's order
+	cout << "Your order:" << endl;
+
+	for (int i = 0; i < MENU_LEN; i++)
+	{
+		// don't display menu itens that were not ordered
+		if (!menuArray[i].isOrdered) { continue; }
+
+		cout << " " << i + 1 << ". " << setw(COLUMN_WIDTH) << menuArray[i].menuItem;
+		cout << "$" << menuArray[i].menuPrice << endl;
+
+		total += menuArray[i].menuPrice;
+	}
+	
+	// Calculate and add tax
+	tax = total * TAX_RATE;
+	total += tax;
+
+	// Display tax
+	cout << "------------------------------" << endl;
+	cout << " Tax (5%)               $" << tax << endl;
+	cout << " Total                  $" << total << endl << endl;
+
+	// Say goodbye
+	cout << "Thank you for your order at Jared's Restaurant!" << endl << endl;
 }
